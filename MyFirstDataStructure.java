@@ -10,33 +10,90 @@ public class MyFirstDataStructure<T> {
      * 	-	basic arrays
      * 	-	primitive variables
      */
-
+	MyAVLTree<T> tree;
+	TreeNode<T>[] max_array;
+	TreeNode<T>[] last_array;
+	int maxIndex;
+	int lastIndex;
+	TreeNode<T> maximum;
+	TreeNode<T> first;
+	TreeNode<T> last;
+	int size;
+	int maxSize;
 	/***
      * This function is the Init function.
 	 * @param N The maximum number of elements in the data structure at each time.
      */
 	public MyFirstDataStructure(int N) {
-		throw new UnsupportedOperationException("Delete this line and replace it with your implementation");
+		tree = new MyAVLTree<>();
+		max_array = new TreeNode[N];
+		last_array = new TreeNode[N];;
+		maximum = null;
+		first = null;
+		last = null;
+		size = 0;
+		maxIndex = 0;
+		lastIndex = 0;
+		maxSize = N;
 	}
 	
 	public void insert(Element<T> x) {
-		throw new UnsupportedOperationException("Delete this line and replace it with your implementation");
+//		if(size == maxSize){
+//			tree.delete(last);
+//			size--;
+//		}
+		TreeNode<T> newnode = new TreeNode<>(x);
+		if(first == null){
+			first = newnode;
+			max_array[maxIndex] = newnode;
+			maxIndex++;
+		}
+		tree.insert(newnode);
+		//last =  newnode;
+		last_array[lastIndex] = newnode;
+		lastIndex++;
+		size++;
+		if(last_array[lastIndex-1].key() > max_array[maxIndex-1].key()){
+			max_array[maxIndex] = newnode;
+			maxIndex++;
+		}
 	}
 	
 	public void findAndRemove(int k) {
-		throw new UnsupportedOperationException("Delete this line and replace it with your implementation");
+		TreeNode<T> deleteNode = tree.search(k);
+		if(deleteNode != null){
+			if(deleteNode == last_array[lastIndex-1]){
+				last_array[lastIndex-1] = null;
+				lastIndex--;
+			}
+			if(deleteNode == max_array[maxIndex-1]){
+				max_array[maxIndex-1] = null;
+				maxIndex--;
+			}
+
+			tree.delete(deleteNode);
+		}
+
 	}
 
 	public Element<T> maximum() {
-		throw new UnsupportedOperationException("Delete this line and replace it with your implementation");
+		if(maxIndex >0){
+			return max_array[maxIndex-1];
+		} else
+			return null;
 	}
 
 	public Element<T> first() {
-		throw new UnsupportedOperationException("Delete this line and replace it with your implementation");
+		return first;
 	}
 
 	public Element<T> last() {
-		throw new UnsupportedOperationException("Delete this line and replace it with your implementation");
+		if(lastIndex > 0){
+			return last_array[lastIndex-1];
+		} else{
+			return null;
+		}
+
 	}
 
 }
