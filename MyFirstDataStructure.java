@@ -13,8 +13,10 @@ public class MyFirstDataStructure<T> {
 	MyAVLTree<T> tree;
 	TreeNode<T>[] max_array;
 	TreeNode<T>[] last_array;
+	TreeNode<T>[] first_array;
 	int maxIndex;
 	int lastIndex;
+	int firstIndex;
 	TreeNode<T> maximum;
 	TreeNode<T> first;
 	TreeNode<T> last;
@@ -28,12 +30,14 @@ public class MyFirstDataStructure<T> {
 		tree = new MyAVLTree<>();
 		max_array = new TreeNode[N];
 		last_array = new TreeNode[N];;
+		first_array = new TreeNode[N];
 		maximum = null;
 		first = null;
 		last = null;
 		size = 0;
 		maxIndex = 0;
 		lastIndex = 0;
+		firstIndex = 0;
 		maxSize = N;
 	}
 	
@@ -69,6 +73,11 @@ public class MyFirstDataStructure<T> {
 			if(deleteNode == max_array[maxIndex-1]){
 				max_array[maxIndex-1] = null;
 				maxIndex--;
+			}
+			if (deleteNode == last_array[firstIndex]) {
+				last_array[firstIndex] = null;
+				firstIndex++;
+				first = last_array[firstIndex];
 			}
 
 			tree.delete(deleteNode);
