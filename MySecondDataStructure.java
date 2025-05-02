@@ -11,7 +11,9 @@ public class MySecondDataStructure {
 	MyArray<Product> productArray;
 	double avg;
 	int[] raisePrice;
-	Product max;
+	ArrayElement<Product> max;
+	private ArrayElement<Product>[] championByQuality;
+	private int globalQuality;
 	int sumOfQualities;
 	int[] qualityCount;
 	/***
@@ -22,6 +24,8 @@ public class MySecondDataStructure {
 		productArray = new MyArray<>(N);
 		avg = 0;
 		raisePrice = new int[N];
+		championByQuality  = new ArrayElement[6];
+		globalQuality      = -1;
 		max = null;
 		sumOfQualities = 0;
 		qualityCount = new int[6];
@@ -30,38 +34,50 @@ public class MySecondDataStructure {
 	public void insert(Product product) {
 		Element<Product> prod = new Element<Product>(0,product);
 		ArrayElement<Product> newproduct = new ArrayElement<>(prod);
+		newproduct.setInsertionRaise(raisePrice[product.quality()]);
 		productArray.insert(newproduct);
 		sumOfQualities += product.quality();
 		calculateAvg();
 		qualityCount[product.quality()]++;
 		int addedprice = 0;
-		if(max != null){
-			int maxQuality = max.quality();
-			addedprice = raisePrice[maxQuality] != -1 ? raisePrice[maxQuality]:0;
+//		if(max != null){
+//			int maxQuality = max.quality();
+//			addedprice = raisePrice[maxQuality] != -1 ? raisePrice[maxQuality]:0;
+//		}
+		if (championByQuality[product.quality()] == null
+				|| effectivePrice(newproduct) > effectivePrice(championByQuality[product.quality()])) {
+			championByQuality[product.quality()] = newproduct;
 		}
-		if(max == null || (product.price() > max.price() + addedprice)){
-			max = product;
-		}
+		updateGlobalChampion(newproduct.satelliteData().quality());
 	}
 	
 	public void findAndRemove(int id) {
-		Product delete = null;
+		ArrayElement<Product> delete = null;
 		for(int i =0;i<productArray.size();i++){
 			if(productArray.get(i).satelliteData().id() == id ){
-				delete = productArray.get(i).satelliteData();
+				delete = productArray.get(i);
 				productArray.delete(productArray.get(i));
 				break;
 			}
 		}
 		if (delete != null) {
-			if(delete.equals(max)){
-				calculateNewMax();
-			}
-			qualityCount[delete.quality()]--;
-			sumOfQualities = sumOfQualities - delete.quality();
-			calculateAvg();
-		}
+			if(delete.satelliteData().equals(delete.satelliteData())){
+				for (int i = 0; i < productArray.size(); i++) {
+					ArrayElement<Product> e = productArray.get(i);
+					if (e.satelliteData().quality() == delete.satelliteData().quality()) {
+						if (championByQuality[delete.satelliteData().quality()] == null
+								|| effectivePrice(e) > effectivePrice(championByQuality[delete.satelliteData().quality()])) {
+							championByQuality[delete.satelliteData().quality()] = e;
+						}
+					}
+				}
 
+			}
+			qualityCount[delete.satelliteData().quality()]--;
+			sumOfQualities = sumOfQualities - delete.satelliteData().quality();
+			calculateAvg();
+			recomputeGlobalChampion();
+		}
 	}
 	private void calculateAvg(){
 		if(productArray.size()==0){
@@ -69,20 +85,6 @@ public class MySecondDataStructure {
 		} else{
 			avg = (double) sumOfQualities / productArray.size();
 		}
-	}
-	private void calculateNewMax(){
-		Product maximum =productArray.get(0).satelliteData();
-		for(int j =0;j<productArray.size();j++){
-			int quality = productArray.get(j).satelliteData().quality();
-			int maxquality= maximum.quality();
-			int addedmax = raisePrice[maxquality] != -1 ? raisePrice[maxquality]:0;
-			int addedprice = raisePrice[quality] != -1 ? raisePrice[quality]:0;
-			if(productArray.get(j).satelliteData().price()+addedprice>maximum.price()+addedmax){
-				maximum = productArray.get(j).satelliteData();
-			}
-		}
-		max = maximum;
-
 	}
 	public int medianQuality() {
 		if (productArray.size() == 0) return -1;
@@ -104,13 +106,46 @@ public class MySecondDataStructure {
 		if (productArray.size()==0) return -1;
 		return avg;
 	}
+	private int effectivePrice(ArrayElement<Product> e) {
+		Product p = e.satelliteData();
+		return p.price() + (raisePrice[p.quality()] - e.getInsertionRaise());
+	}
+	private void recomputeGlobalChampion() {
+		globalQuality = -1;
+		int best = Integer.MIN_VALUE;
+		for (int q = 0; q < 6; q++) {
+			if (championByQuality[q] != null) {
+				int eff = effectivePrice(championByQuality[q]);
+				if (eff > best) {
+					best = eff;
+					globalQuality = q;
+				}
+			}
+		}
+	}
+
+
+	private void updateGlobalChampion(int q) {
+		if (globalQuality < 0
+				|| effectivePrice(championByQuality[q])
+				> effectivePrice(championByQuality[globalQuality])) {
+			globalQuality = q;
+		}
+	}
 
 	public void raisePrice(int raise, int quality) {
 		raisePrice[quality] += raise;
+		if (championByQuality[quality] != null) {
+			updateGlobalChampion(quality);
+		}
 	}
 
 	public Product mostExpensive() {
-		return max;
+		if(globalQuality < 0){
+			return null;
+		} else{
+			return championByQuality[globalQuality].satelliteData();
+		}
 	}
 
 }

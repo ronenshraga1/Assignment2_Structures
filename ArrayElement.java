@@ -13,9 +13,10 @@ public class ArrayElement<T> extends Element<T> {
      * 	-	primitive variables
      */
 	private int index;		//The index of the element in the array.
+	private int insertionRaise;
 	
 	public ArrayElement(int key, T satelliteData) {
-		super(key, satelliteData);
+		super(key, satelliteData);this.insertionRaise = 0;
 	}
 	
 	public ArrayElement(int key) {
@@ -33,4 +34,13 @@ public class ArrayElement<T> extends Element<T> {
 	public void setIndex(int index) {
 		this.index = index;
 	}
+
+	public void setInsertionRaise(int insertionRaise) {
+		this.insertionRaise = insertionRaise;
+	}
+	public int getInsertionRaise() {
+		return this.insertionRaise;
+	}
+
+
 }
