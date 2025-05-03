@@ -10,14 +10,11 @@ public class MyFirstDataStructure<T> {
      * 	-	basic arrays
      * 	-	primitive variables
      */
-	// — map key → ListLink via an AVL keyed by key, storing each ListLink<T> as “satelliteData”
-	// AVL tree storing ListLink<T> nodes, keyed by element.key()
 	private MyAVLTree<ListLink<T>> tree;
-	private TreeNode<ListLink<T>> maxNode;          // pointer to current maximum in the tree
+	private TreeNode<ListLink<T>> maxNode;
 
-	// Our own doubly-linked list to track insertion order
-	private ListLink<T> head;  // oldest inserted still present
-	private ListLink<T> tail;  // newest inserted still present
+	private ListLink<T> head;
+	private ListLink<T> tail;
 	/***
      * This function is the Init function.
 	 * @param N The maximum number of elements in the data structure at each time.
@@ -30,7 +27,6 @@ public class MyFirstDataStructure<T> {
 	}
 
 	public void insert(Element<T> x) {
-		// 1) wrap into a ListLink and append to tail of our list
 		ListLink<T> link = new ListLink<>(x);
 		if (head == null) {
 			head = tail = link;
@@ -40,11 +36,9 @@ public class MyFirstDataStructure<T> {
 			tail = link;
 		}
 
-		// 2) insert into AVL tree keyed by x.key()
 		TreeNode<ListLink<T>> node = new TreeNode<>(link.key(), link);
 		tree.insert(node);
 
-		// 3) update maximum pointer in O(1)
 		if (maxNode == null || node.key() > maxNode.key()) {
 			maxNode = node;
 		}
@@ -54,18 +48,13 @@ public class MyFirstDataStructure<T> {
 		TreeNode<ListLink<T>> node = tree.search(k);
 		if (node == null) return;
 
-		// record link before any tree mutations
 		ListLink<T> link = node.satelliteData();
 		boolean wasMax = (node == maxNode);
 		TreeNode<ListLink<T>> newMax = null;
 		if (wasMax) {
 			newMax = predecessor(node);
 		}
-
-		// delete from AVL tree (may restructure nodes internally)
 		tree.delete(node);
-
-		// unlink from our insertion-order list in O(1)
 		if (link.getPrev() != null) {
 			link.getPrev().setNext(link.getNext());
 		} else {
@@ -76,8 +65,6 @@ public class MyFirstDataStructure<T> {
 		} else {
 			tail = link.getPrev();
 		}
-
-		// update max pointer
 		if (wasMax) {
 			maxNode = newMax;
 		}
@@ -93,7 +80,6 @@ public class MyFirstDataStructure<T> {
 	public Element<T> last() {
 		return tail;
 	}
-	// — BST predecessor in O(height)=O(log n)
 	private TreeNode<ListLink<T>> predecessor(TreeNode<ListLink<T>> x) {
 		if (x.getLeft() != null) {
 			TreeNode<ListLink<T>> p = x.getLeft();
