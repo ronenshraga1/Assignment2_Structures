@@ -121,7 +121,31 @@ public class Tests {
         System.out.println("After insert(p5) medianQuality: " + ds.medianQuality() + " (expected 2)");
 
     }
+    public static void testReverse(){
+        // 1) Create a MyArray of capacity 8 and insert 8 elements
+        MyArray<Integer> arr = new MyArray<>(8);
+        arr.insert(new ArrayElement<>(1, 10000));
+        arr.insert(new ArrayElement<>(2, 5));
+        arr.insert(new ArrayElement<>(3, 200));
+        arr.insert(new ArrayElement<>(4, 4));
+        arr.insert(new ArrayElement<>(5, 1));
+        arr.insert(new ArrayElement<>(6, 100));
+        arr.insert(new ArrayElement<>(7, 2));
+        arr.insert(new ArrayElement<>(8, 3));
+
+        // 2) Print before reversing
+        System.out.println("Before reverse: " + arr.toString());
+        // Expected: [10000][5][200][4][1][100][2][3]
+
+        // 3) Call reverse()
+        arr.reverse();
+
+        // 4) Print after reversing
+        System.out.println("After reverse:  " + arr.toString());
+        // Expected: [3][2][100][1][4][200][5][10000]
+
+    }
     public static void main(String[] args) {
-        test3();
+        testReverse();
     }
 }

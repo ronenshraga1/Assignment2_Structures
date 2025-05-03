@@ -16,11 +16,10 @@ public class MyArray<T> {
      * Implement the following method.
      */
     public void reverse() {
-        ArrayElement<T> temp;
         for(int i=0; i < array.length/2 ;i++){
-            int j = array.length-1-i;
-            if(i>=j)return;
-            temp = array[j];
+            int j = size-1-i;
+            if(i>=j)break;
+            ArrayElement<T> temp = array[j];
             array[j] = array[i];
             array[i] = temp;
             array[i].setIndex(i);
