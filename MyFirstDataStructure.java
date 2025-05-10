@@ -12,7 +12,6 @@ public class MyFirstDataStructure<T> {
      */
 	private MyAVLTree<ListLink<T>> tree;
 	private TreeNode<ListLink<T>> maxNode;
-
 	private ListLink<T> head;
 	private ListLink<T> tail;
 	/***
@@ -29,16 +28,15 @@ public class MyFirstDataStructure<T> {
 	public void insert(Element<T> x) {
 		ListLink<T> link = new ListLink<>(x);
 		if (head == null) {
-			head = tail = link;
+			head = link;
+			tail = link;
 		} else {
 			tail.setNext(link);
 			link.setPrev(tail);
 			tail = link;
 		}
-
 		TreeNode<ListLink<T>> node = new TreeNode<>(link.key(), link);
 		tree.insert(node);
-
 		if (maxNode == null || node.key() > maxNode.key()) {
 			maxNode = node;
 		}
@@ -47,12 +45,11 @@ public class MyFirstDataStructure<T> {
 	public void findAndRemove(int k) {
 		TreeNode<ListLink<T>> node = tree.search(k);
 		if (node == null) return;
-
 		ListLink<T> link = node.satelliteData();
 		boolean wasMax = (node == maxNode);
 		TreeNode<ListLink<T>> newMax = null;
 		if (wasMax) {
-			newMax = predecessor(node);
+			newMax = oldMax(node);
 		}
 		tree.delete(node);
 		if (link.getPrev() != null) {
@@ -71,7 +68,10 @@ public class MyFirstDataStructure<T> {
 	}
 
 	public Element<T> maximum() {
-		return (maxNode == null ? null : maxNode.satelliteData());
+		if (maxNode == null) {
+			return null;
+		}
+		return maxNode.satelliteData();
 	}
 	public Element<T> first() {
 		return head;
@@ -80,18 +80,18 @@ public class MyFirstDataStructure<T> {
 	public Element<T> last() {
 		return tail;
 	}
-	private TreeNode<ListLink<T>> predecessor(TreeNode<ListLink<T>> x) {
-		if (x.getLeft() != null) {
-			TreeNode<ListLink<T>> p = x.getLeft();
-			while (p.getRight() != null) p = p.getRight();
-			return p;
+	private TreeNode<ListLink<T>> oldMax(TreeNode<ListLink<T>> node) {
+		if (node.getLeft() != null) {
+			TreeNode<ListLink<T>> leftNode = node.getLeft();
+			while (leftNode.getRight() != null) {leftNode = leftNode.getRight();}
+			return leftNode;
 		}
-		TreeNode<ListLink<T>> p = x.getParent();
-		while (p != null && x == p.getLeft()) {
-			x = p;
-			p = p.getParent();
+		TreeNode<ListLink<T>> parent = node.getParent();
+		while (parent != null && node == parent.getLeft()) {
+			node = parent;
+			parent = parent.getParent();
 		}
-		return p;
+		return parent;
 	}
 
 

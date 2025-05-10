@@ -39,8 +39,7 @@ public class MySecondDataStructure {
 		sumOfQualities += product.quality();
 		calculateAvg();
 		qualityCount[product.quality()]++;
-		if (maxByQuality[product.quality()] == null
-				|| calculatePrice(newproduct) > calculatePrice(maxByQuality[product.quality()])) {
+		if (maxByQuality[product.quality()] == null || calculatePrice(newproduct) > calculatePrice(maxByQuality[product.quality()])) {
 			maxByQuality[product.quality()] = newproduct;
 		}
 		updateMax(newproduct.satelliteData().quality());
@@ -72,7 +71,7 @@ public class MySecondDataStructure {
 			qualityCount[delete.satelliteData().quality()]--;
 			sumOfQualities = sumOfQualities - delete.satelliteData().quality();
 			calculateAvg();
-			recomputeMaxByQuality();
+			calculateMaxByQuality();
 		}
 	}
 	private void calculateAvg(){
@@ -84,17 +83,14 @@ public class MySecondDataStructure {
 	}
 	public int medianQuality() {
 		if (productArray.size() == 0) return -1;
-
 		int target = (productArray.size() + 1) / 2;
 		int cumulative = 0;
-
 		for (int q = 0; q <= 5; q++) {
 			cumulative += qualityCount[q];
 			if (cumulative >= target) {
 				return q;
 			}
 		}
-
 		return -1;
 	}
 	
@@ -106,25 +102,22 @@ public class MySecondDataStructure {
 		Product p = e.satelliteData();
 		return p.price() + (raisePrice[p.quality()] - e.getInsertionRaise());
 	}
-	private void recomputeMaxByQuality() {
+	private void calculateMaxByQuality() {
 		maxQualityIndex = -1;
-		int best = Integer.MIN_VALUE;
+		int best = -1;
 		for (int q = 0; q < 6; q++) {
 			if (maxByQuality[q] != null) {
-				int eff = calculatePrice(maxByQuality[q]);
-				if (eff > best) {
-					best = eff;
+				int price = calculatePrice(maxByQuality[q]);
+				if (price > best) {
+					best = price;
 					maxQualityIndex = q;
 				}
 			}
 		}
 	}
 
-
 	private void updateMax(int q) {
-		if (maxQualityIndex < 0
-				|| calculatePrice(maxByQuality[q])
-				> calculatePrice(maxByQuality[maxQualityIndex])) {
+		if (maxQualityIndex < 0 || calculatePrice(maxByQuality[q]) > calculatePrice(maxByQuality[maxQualityIndex])) {
 			maxQualityIndex = q;
 		}
 	}
